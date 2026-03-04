@@ -21,3 +21,9 @@ void dataToken::display() const {
               << "Instant Sell Price: $" << sell_price << "\n"
               << "Bid-Ask Spread    : $" << (buy_price - sell_price) << "\n\n";
 }
+
+double dataToken::getBuyPrice() const {return buy_price; }
+double dataToken::getSellPrice() const { return sell_price; }
+long dataToken::getBuyVolume() const { return buy_volume; }
+long dataToken::getSellVolume() const { return sell_volume; }
+std::string dataToken::getProductId() const { return product_id; }

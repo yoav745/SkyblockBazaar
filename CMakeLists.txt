@@ -6,7 +6,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # 1. Create the executable from your main.cpp file
-add_executable(ProjectSkyblock main.cpp dataToken.cpp)
+add_executable(ProjectSkyblock main.cpp dataToken.cpp
+        itemHour.cpp
+        itemHour.h)
 # 2. Tell CMake where to find your downloaded nlohmann/json.hpp
 target_include_directories(ProjectSkyblock PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 

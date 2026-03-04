@@ -4,6 +4,9 @@
 
 #ifndef PROJECTSKYBLOCK_ITEMHOUR_H
 #define PROJECTSKYBLOCK_ITEMHOUR_H
+
+#include <string>
+#include <nlohmann/json.hpp>
 #include "dataToken.h"
 
 namespace hourNamespace {
@@ -17,9 +20,9 @@ namespace hourNamespace {
         int update(const dataToken& token,long long current_time);
 
 
-        double getHighPrice() const;
-        double getLowPrice() const;
-        double getAveragePrice() const;
+        [[nodiscard]] double getHighPrice() const;
+        [[nodiscard]] double getLowPrice() const;
+        [[nodiscard]] double getAveragePrice() const;
 
 
     private:
