@@ -1,16 +1,22 @@
-//
-// Created by zylyo on 04/03/2026.
-//
+#ifndef DATATOKEN_H
+#define DATATOKEN_H
 
-#ifndef PROJECTSKYBLOCK_DATATOKEN_H
-#define PROJECTSKYBLOCK_DATATOKEN_H
-
-namespace dataToken {
+#include <string>
+#include <nlohmann/json.hpp>
 
 class dataToken {
+public:
+    std::string product_id;
+    double buy_price;  // The current price to INSTANT BUY
+    double sell_price; // The current price to INSTANT SELL
+    long buy_volume;   // Total active buy orders
+    long sell_volume;  // Total active sell offers
 
+    // Constructor declaration
+    explicit dataToken(const nlohmann::json& item_data);
+
+    // Display function declaration
+    void display() const;
 };
 
-} // dataToken
-
-#endif //PROJECTSKYBLOCK_DATATOKEN_H
+#endif // DATATOKEN_H
