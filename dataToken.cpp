@@ -7,7 +7,7 @@ dataToken::dataToken(const nlohmann::json& item_data) {
 
     // Hypixel stores the current summary in "quick_status"
     auto status = item_data["quick_status"];
-
+    timestamp = item_data.value("lastUpdated", 0LL);
     buy_price = status["buyPrice"];
     sell_price = status["sellPrice"];
     buy_volume = status["buyVolume"];
@@ -22,8 +22,11 @@ void dataToken::display() const {
               << "Bid-Ask Spread    : $" << (buy_price - sell_price) << "\n\n";
 }
 
+
+
 double dataToken::getBuyPrice() const {return buy_price; }
 double dataToken::getSellPrice() const { return sell_price; }
-long dataToken::getBuyVolume() const { return buy_volume; }
-long dataToken::getSellVolume() const { return sell_volume; }
+long long dataToken::getTimestamp() const { return timestamp; }
+long long dataToken::getBuyVolume() const { return buy_volume; }
+long long dataToken::getSellVolume() const { return sell_volume; }
 std::string dataToken::getProductId() const { return product_id; }

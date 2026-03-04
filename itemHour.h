@@ -37,7 +37,7 @@ namespace hourNamespace {
 
         double price_sum;
         int tick_count;
-        long active_volume;
+        long long active_volume;
 
     };
 }

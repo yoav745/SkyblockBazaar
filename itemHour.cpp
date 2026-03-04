@@ -35,14 +35,26 @@ namespace hourNamespace {
         : itemHour(dataToken(item_data)) {}
 
     int itemHour::update(const dataToken& token, long long current_time) {
-        if (start_timestamp != 0 && current_time >= start_timestamp + 3600000) {
+
+        if (tick_count == 0) {
+            start_timestamp = current_time;
+            product_id = token.getProductId();
+            open_price = token.getBuyPrice();
+            high_price = token.getBuyPrice();
+            low_price = token.getBuyPrice();
+            close_price = token.getBuyPrice();
+            price_sum = token.getBuyPrice();
+            active_volume = token.getBuyVolume();
+        }
+
+        if (start_timestamp != 0 && current_time >= start_timestamp + 10000) {
             return HOUR_ENDED_ERROR;
         }
         double current_price = token.getBuyPrice();
         if (current_price > high_price) {
             high_price = current_price;
         }
-        if (current_price < low_price || low_price == 0.0) {
+        if (current_price < low_price) {
             low_price = current_price;
         }
         close_price = current_price;

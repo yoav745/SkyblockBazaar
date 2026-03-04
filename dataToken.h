@@ -15,18 +15,20 @@ public:
     void display() const;
 
     std::string getProductId() const;
+
     double getBuyPrice() const;
     double getSellPrice() const;
-    long getBuyVolume() const;
-    long getSellVolume() const;
+    long long getBuyVolume() const;
+    long long getSellVolume() const;
+    long long getTimestamp() const;
 
     private:
-
+    long long timestamp;
     std::string product_id;
     double buy_price;  // The current price to INSTANT BUY
     double sell_price; // The current price to INSTANT SELL
-    long buy_volume;   // Total active buy orders
-    long sell_volume;  // Total active sell offers
+    long long buy_volume;   // Total active buy orders
+    long long sell_volume;  // Total active sell offers
 };
 
 #endif // DATATOKEN_H
