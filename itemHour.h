@@ -10,6 +10,7 @@
 #include "dataToken.h"
 
 namespace hourNamespace {
+    #define HOUR_ENDED 1
     class itemHour {
 
     public:

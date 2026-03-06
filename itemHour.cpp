@@ -42,12 +42,14 @@ namespace hourNamespace {
             open_price = token.getBuyPrice();
             high_price = token.getBuyPrice();
             low_price = token.getBuyPrice();
+            tick_count = 1;
             close_price = token.getBuyPrice();
             price_sum = token.getBuyPrice();
             active_volume = token.getBuyVolume();
+            return SUCCESS_CODE;
         }
 
-        if (start_timestamp != 0 && current_time >= start_timestamp + 10000) {
+        if (start_timestamp != 0 && current_time >= start_timestamp + 1000) {
             return HOUR_ENDED_ERROR;
         }
         double current_price = token.getBuyPrice();
