@@ -1,33 +1,36 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <unordered_map>
 #include <curl/curl.h>
 #include "lib/nlohmann/json.hpp"
 #include "dataToken.h"
+#include "DatabaseManager.h"
 #include "SkyblockItem.h"
 
 using json = nlohmann::json;
 
+// cURL write callback
 size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* userp) {
     userp->append((char*)contents, size * nmemb);
     return size * nmemb;
 }
 
 int main() {
-    std::string target_item = "ENCHANTED_DIAMOND_BLOCK";
+    DatabaseManager db("market_data.db");
+    // The "In-Memory Database": Maps the Product ID string to its Manager object
+    std::unordered_map<std::string, SkyblockItems::SkyblockItem> market;
 
-    // 1. Instantiate the Algorithmic Manager
-    SkyblockItems::SkyblockItem item_manager(target_item);
+    std::cout << "=================================================\n";
+    std::cout << "   INITIALIZING SKYBLOCK QUANTITATIVE ENGINE     \n";
+    std::cout << "=================================================\n\n";
 
-    long long simulated_time = 0;
-    int loop_count = 0;
-    auto start_test = std::chrono::steady_clock::now();
+    // Track the last API update to prevent processing the same data twice
+    long long last_processed_time = 0;
+    int api_calls = 0;
 
-    std::cout << "Starting Algorithmic Engine Test for: " << target_item << "\n";
-    std::cout << "Building historical baseline... Please wait.\n" << std::endl;
-
-    // Run the test for 45 seconds real-time
-    while (std::chrono::steady_clock::now() - start_test < std::chrono::seconds(45)) {
+    // Run indefinitely
+    while (true) {
         std::string readBuffer;
         CURL* curl = curl_easy_init();
 
@@ -40,44 +43,48 @@ int main() {
                 json data = json::parse(readBuffer);
 
                 if (data["success"] == true) {
-                    if (simulated_time == 0) simulated_time = data["lastUpdated"];
-                    simulated_time += 2000; // Force 2 seconds to pass every tick
-                    loop_count++;
+                    long long api_time = data["lastUpdated"];
 
-                    // Extract the raw item data
-                    json item_json = data["products"][target_item];
+                    // The Bazaar only updates every ~60 seconds.
+                    // If the time hasn't changed, ignore it and wait.
+                    if (api_time > last_processed_time) {
+                        last_processed_time = api_time;
+                        api_calls++;
 
-                    // =========================================================
-                    // THE CRASH INJECTOR (For testing the Z-Score Math)
-                    // =========================================================
-                    // After 21 loops, we have built a solid baseline in the std::deque.
-                    // On the 22nd loop, we simulate a massive market crash!
-                    bool gate = false;
-                    if (loop_count == 22) {
-                        std::cout << "\n[TEST INJECTION] Simulating a massive 30% market crash..." << std::endl;
-                        double real_price = item_json["quick_status"]["buyPrice"];
-                        item_json["quick_status"]["buyPrice"] = real_price * 0.70; // Drop price by 30%
-                        gate = true;
+                        int items_processed = 0;
+
+                        // Iterate through every single item in the Bazaar
+                        for (auto& [item_name, item_data] : data["products"].items()) {
+
+                            // 1. If we've never seen this item before, create a new manager for it
+                            if (market.find(item_name) == market.end()) {
+                                market.emplace(item_name, SkyblockItems::SkyblockItem(item_name , &db));
+                            }
+
+                            // 2. Create the data token
+                            dataToken tick(item_data, api_time);
+
+                            // 3. Route the tick to the correct manager
+                            market.at(item_name).processTick(tick);
+
+                            items_processed++;
+                        }
+
+                        // --- THE CONSOLE DASHBOARD ---
+                        // We use \r to overwrite the current line instead of scrolling forever
+                        std::cout << "\r[ ENGINE STATUS ] Active Trackers: " << market.size()
+                                  << " | API Pings: " << api_calls
+                                  << " | Last Update: " << api_time << std::flush;
                     }
-
-                    if(gate) {
-                        std::cout << "";
-                    }
-                    // 2. Create the token and feed it to the algorithm
-                    dataToken tick(item_json , data["lastUpdated"]);
-                    std::cout << "Price " << tick.getBuyPrice() << std::endl;
-                    // The manager handles the math, the archiving, and the alerts internally
-                    item_manager.processTick(tick);
-
                 }
             }
             curl_easy_cleanup(curl);
         }
 
-        // Sleep for 1 second real-time to respect API rate limits
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        // Poll the API every 15 seconds.
+        // We poll faster than the 60s update to catch the price change the moment it happens.
+        std::this_thread::sleep_for(std::chrono::seconds(15));
     }
 
-    std::cout << "\n--- ENGINE TEST COMPLETE ---" << std::endl;
     return 0;
 }

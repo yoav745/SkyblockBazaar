@@ -19,11 +19,12 @@ namespace hourNamespace {
         explicit itemHour(const dataToken& data_token);
         int update(const dataToken& token);
 
-
+        itemHour(long long ts, double avg_price, double high, double low, long long vol);
         [[nodiscard]] double getHighPrice() const;
         [[nodiscard]] double getLowPrice() const;
         [[nodiscard]] double getAveragePrice() const;
-
+        [[nodiscard]] long long getTimestamp() const;
+        [[nodiscard]] long long getVolume() const;
 
     private:
         long long start_timestamp;

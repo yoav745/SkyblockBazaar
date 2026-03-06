@@ -9,13 +9,14 @@
 #include "itemHour.h"
 #include <string>
 #include <deque>
+#include "DataBaseManager.h"
 
 namespace SkyblockItems {
     class SkyblockItem {
 
 
     public:
-        explicit SkyblockItem(const std::string& id);
+        SkyblockItem(const std::string& id, DatabaseManager* db);
         void processTick(const dataToken& live_tick);
 
         [[nodiscard]] std::string getProductId() const;
@@ -28,6 +29,7 @@ namespace SkyblockItems {
 
         hourNamespace::itemHour active_hour;
 
+        DatabaseManager* db_manager;
         static constexpr size_t MAX_HISTORY = 168;
         void checkBuyOpportunity(double current_price) const;
         void addItemToHour(const dataToken& data);

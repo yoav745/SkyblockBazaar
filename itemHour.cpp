@@ -17,7 +17,17 @@ namespace hourNamespace {
         tick_count = 0;
         active_volume = 0;
     }
+    itemHour::itemHour(long long ts, double avg_price, double high, double low, long long vol) : itemHour() {
+        start_timestamp = ts;
+        high_price = high;
+        low_price = low;
+        active_volume = vol;
 
+        // THE MATH TRICK: Set count to 1 and sum to the average.
+        // Now getAveragePrice() will return exactly the average!
+        tick_count = 1;
+        price_sum = avg_price;
+    }
     itemHour::itemHour(const dataToken& token) : itemHour() {
         update(token);
     }
@@ -38,7 +48,7 @@ namespace hourNamespace {
             return SUCCESS_CODE;
         }
 
-        if (start_timestamp != 0 && token.getTimestamp() >= start_timestamp + 3600000) {
+        if (start_timestamp != 0 && token.getTimestamp() >= start_timestamp + 10000) {
             return HOUR_ENDED_ERROR;
         }
         double current_price = token.getBuyPrice();
@@ -48,13 +58,15 @@ namespace hourNamespace {
         if (current_price < low_price) {
             low_price = current_price;
         }
-        close_price = current_price;
+          close_price = current_price;
         price_sum += current_price;
         tick_count++;
         active_volume = token.getBuyVolume();
         return SUCCESS_CODE;
     }
 
+    long long itemHour::getTimestamp() const { return start_timestamp; }
+    long long itemHour::getVolume() const { return active_volume; }
     double itemHour::getHighPrice() const { return high_price; }
 
     double itemHour::getLowPrice() const { return low_price; }
