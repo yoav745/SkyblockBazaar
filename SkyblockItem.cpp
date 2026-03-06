@@ -40,7 +40,7 @@ namespace SkyblockItems {
         if (current_price > 0 && current_price < average_price * 0.8 && average_price - current_price > 1000) {
             std::cout << "BUY " << product_id << std::endl <<" The Price is: " << current_price << std::endl << " While the average price is " << average_price << std::endl;
         }
-    }   
+    }
 
 
     void SkyblockItem::addHourToHistory(const hourNamespace::itemHour& item_hour) {

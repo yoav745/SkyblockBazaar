@@ -83,7 +83,7 @@ int main() {
 
         // Poll the API every 15 seconds.
         // We poll faster than the 60s update to catch the price change the moment it happens.
-        std::this_thread::sleep_for(std::chrono::seconds(15));
+        std::this_thread::sleep_for(std::chrono::seconds(30));
     }
 
     return 0;

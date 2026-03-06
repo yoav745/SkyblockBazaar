@@ -1,0 +1,3 @@
+/mnt/c/Users/zylyo/OneDrive/Desktop/ProjectSkyblock/buildrelese/CMakeFiles/ProjectSkyblock.dir
+/mnt/c/Users/zylyo/OneDrive/Desktop/ProjectSkyblock/buildrelese/CMakeFiles/edit_cache.dir
+/mnt/c/Users/zylyo/OneDrive/Desktop/ProjectSkyblock/buildrelese/CMakeFiles/rebuild_cache.dir

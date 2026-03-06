@@ -48,7 +48,7 @@ namespace hourNamespace {
             return SUCCESS_CODE;
         }
 
-        if (start_timestamp != 0 && token.getTimestamp() >= start_timestamp + 10000) {
+        if (start_timestamp != 0 && token.getTimestamp() >= start_timestamp + 3600000) {
             return HOUR_ENDED_ERROR;
         }
         double current_price = token.getBuyPrice();
