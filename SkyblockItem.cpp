@@ -14,10 +14,10 @@ namespace SkyblockItems {
         // No need to initialize other elements
     }
 
-    void SkyblockItem::processTick(const dataToken &live_tick, long long current_time) {
+    void SkyblockItem::processTick(const dataToken &live_tick) {
 
         checkBuyOpportunity(live_tick.getBuyPrice());
-        addItemToHour(live_tick,current_time);
+        addItemToHour(live_tick);
 
 
     }
@@ -45,11 +45,11 @@ namespace SkyblockItems {
         }
     }
 
-    void SkyblockItem::addItemToHour(const dataToken &data , long long current_time) {
-        if(active_hour.update(data,current_time) == 1) {
+    void SkyblockItem::addItemToHour(const dataToken &data) {
+        if(active_hour.update(data) == 1) {
             addHourToHistory(active_hour);
             active_hour = hourNamespace::itemHour();
-            active_hour.update(data,current_time);
+            active_hour.update(data);
         }
     }
 

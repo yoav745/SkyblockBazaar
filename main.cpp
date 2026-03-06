@@ -64,10 +64,10 @@ int main() {
                         std::cout << "";
                     }
                     // 2. Create the token and feed it to the algorithm
-                    dataToken tick(item_json);
+                    dataToken tick(item_json , data["lastUpdated"]);
                     std::cout << "Price " << tick.getBuyPrice() << std::endl;
                     // The manager handles the math, the archiving, and the alerts internally
-                    item_manager.processTick(tick, simulated_time);
+                    item_manager.processTick(tick);
 
                 }
             }

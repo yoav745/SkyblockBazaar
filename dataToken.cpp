@@ -2,12 +2,12 @@
 #include <iostream>
 
 // Constructor Implementation
-dataToken::dataToken(const nlohmann::json& item_data) {
+dataToken::dataToken(const nlohmann::json& item_data , long long apiTimeStamp) {
     product_id = item_data["product_id"];
 
     // Hypixel stores the current summary in "quick_status"
     auto status = item_data["quick_status"];
-    timestamp = item_data.value("lastUpdated", 0LL);
+    timestamp = apiTimeStamp;
     buy_price = status["buyPrice"];
     sell_price = status["sellPrice"];
     buy_volume = status["buyVolume"];

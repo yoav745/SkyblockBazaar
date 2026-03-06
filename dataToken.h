@@ -9,7 +9,7 @@ public:
 
 
     // Constructor declaration
-    explicit dataToken(const nlohmann::json& item_data);
+    explicit dataToken(const nlohmann::json& item_data , long long apiTimeStamp);
 
     // Display function declaration
     void display() const;

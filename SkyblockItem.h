@@ -16,25 +16,22 @@ namespace SkyblockItems {
 
     public:
         explicit SkyblockItem(const std::string& id);
-        void processTick(const dataToken& live_tick, long long current_time);
+        void processTick(const dataToken& live_tick);
 
         [[nodiscard]] std::string getProductId() const;
         [[nodiscard]] size_t getHistorySize() const;
 
     private:
         std::string product_id;
-        int average_price;
+        double average_price;
         std::deque<hourNamespace::itemHour> history;
 
         hourNamespace::itemHour active_hour;
 
         static constexpr size_t MAX_HISTORY = 168;
-        void checkBuyOpportunity(double current_price   ) const;
-        void addItemToHour(const dataToken& data , long long current_time);
+        void checkBuyOpportunity(double current_price) const;
+        void addItemToHour(const dataToken& data);
         void addHourToHistory(const hourNamespace::itemHour& item_hour);
-        [[nodiscard]] double calculateSMA() const;
-        [[nodiscard]] double calculateStandardDeviation(double sma) const;
-        void evaluateSpike(double current_price) const;
 
     };
 } // SkyblockItems

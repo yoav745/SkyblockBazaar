@@ -18,26 +18,15 @@ namespace hourNamespace {
         active_volume = 0;
     }
 
-    itemHour::itemHour(const dataToken& token) {
-
-
-        start_timestamp = 0;
-        product_id = token.getProductId();
-        open_price = token.getBuyPrice();
-        high_price = token.getBuyPrice();
-        low_price = token.getBuyPrice();
-        close_price = token.getBuyPrice();
-        price_sum = token.getBuyPrice();
-        tick_count = 1;
-        active_volume = token.getBuyVolume();
+    itemHour::itemHour(const dataToken& token) : itemHour() {
+        update(token);
     }
-    itemHour::itemHour(const nlohmann::json& item_data)
-        : itemHour(dataToken(item_data)) {}
 
-    int itemHour::update(const dataToken& token, long long current_time) {
+
+    int itemHour::update(const dataToken& token) {
 
         if (tick_count == 0) {
-            start_timestamp = current_time;
+            start_timestamp = token.getTimestamp();
             product_id = token.getProductId();
             open_price = token.getBuyPrice();
             high_price = token.getBuyPrice();
@@ -49,7 +38,7 @@ namespace hourNamespace {
             return SUCCESS_CODE;
         }
 
-        if (start_timestamp != 0 && current_time >= start_timestamp + 1000) {
+        if (start_timestamp != 0 && token.getTimestamp() >= start_timestamp + 3600000) {
             return HOUR_ENDED_ERROR;
         }
         double current_price = token.getBuyPrice();

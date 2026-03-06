@@ -17,8 +17,7 @@ namespace hourNamespace {
 
         itemHour();
         explicit itemHour(const dataToken& data_token);
-        explicit itemHour(const nlohmann::json& item_data);
-        int update(const dataToken& token,long long current_time);
+        int update(const dataToken& token);
 
 
         [[nodiscard]] double getHighPrice() const;
