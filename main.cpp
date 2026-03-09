@@ -33,7 +33,6 @@ int main() {
 
     // Run indefinitely
     while (true) {
-        try {
         std::string readBuffer;
         CURL* curl = curl_easy_init();
             if (curl) {
@@ -42,6 +41,7 @@ int main() {
                 curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
 
                 if (curl_easy_perform(curl) == CURLE_OK) {
+                    try{
                     json data = json::parse(readBuffer);
 
                     if (data["success"] == true) {
@@ -80,12 +80,13 @@ int main() {
                         }
                     }
                 }
+                    catch (...) {
+                        std::cout << "ERROR CURRENT FUNCTIONS!\n";
+                    }
+                }
                 curl_easy_cleanup(curl);
             }
-        } catch (const json::parse_error& e) {
-            // If the API sends garbage, we catch the crash here and keep the program alive!
-            std::cout << "\n[WARNING] API sent invalid data. Ignoring and retrying in 30s...\n";
-        }
+
         // Poll the API every 15 seconds.
         // We poll faster than the 60s update to catch the price change the moment it happens.
         std::this_thread::sleep_for(std::chrono::seconds(30));
