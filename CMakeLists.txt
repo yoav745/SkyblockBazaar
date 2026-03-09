@@ -16,6 +16,8 @@ add_executable(ProjectSkyblock
         lib/sqlite/sqlite3.c
         DataBaseManager.cpp
         DataBaseManager.h
+        PriceObject.cpp
+        PriceObject.h
 )
 
 # 2. Tell CMake where to find your downloaded nlohmann/json.hpp

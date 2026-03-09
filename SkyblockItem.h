@@ -16,7 +16,7 @@ namespace SkyblockItems {
 
 
     public:
-        SkyblockItem(const std::string& id, DatabaseManager* db);
+        SkyblockItem(const std::string& id, DatabaseManager* db , double multiplier);
         void processTick(const dataToken& live_tick);
 
         [[nodiscard]] std::string getProductId() const;
@@ -24,14 +24,16 @@ namespace SkyblockItems {
 
     private:
         std::string product_id;
-        double average_price;
+        double multiplier;
+        double averageBuyPrice;
+        double averageSellPrice;
         std::deque<hourNamespace::itemHour> history;
 
         hourNamespace::itemHour active_hour;
 
         DatabaseManager* db_manager;
         static constexpr size_t MAX_HISTORY = 168;
-        void checkBuyOpportunity(double current_price) const;
+        void checkBuyOpportunity(const dataToken& token) const;
         void addItemToHour(const dataToken& data);
         void addHourToHistory(const hourNamespace::itemHour& item_hour);
 
