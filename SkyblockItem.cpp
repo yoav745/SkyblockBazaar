@@ -5,6 +5,9 @@
 #include "SkyblockItem.h"
 
 #include <iostream>
+#include <fstream>
+#include <unordered_map>
+#include <sstream> // We need this to format strings easily
 
 namespace SkyblockItems {
 
@@ -32,20 +35,47 @@ namespace SkyblockItems {
     void SkyblockItem::checkBuyOpportunity(const dataToken& currentToken) const {
         long double currentSellPrice = currentToken .getSellPrice();
 
+        static std::unordered_map<std::string, std::string> active_alerts;
+        bool file_needs_update = false;
+
         if(currentSellPrice < averageSellPrice * multiplier && currentSellPrice < averageSellPrice - 1000) {
-            std::cout << "Buy: " << product_id << std::endl
-            << "The usual price to buy is: " << averageSellPrice <<std::endl
-            << "Yet now the price is: " << currentSellPrice <<std::endl
-            << "You can insta sell usually for: " << averageBuyPrice <<std::endl
-            << "Sell volume is: " << currentToken.getSellVolume() << std::endl
-            << "Buy volume is: " << currentToken.getBuyVolume() << std::endl;
+
+            std::ostringstream alertStream;
+            alertStream << "Buy: " << product_id << "\n"
+                        << "The usual price to buy is: " << averageSellPrice << "\n"
+                        << "Yet now the price is: " << currentSellPrice << "\n"
+                        << "You can insta sell usually for: " << averageBuyPrice << "\n"
+                        << "Sell volume is: " << currentToken.getSellVolume() << "\n"
+                        << "Buy volume is: " << currentToken.getBuyVolume() << "\n"
+                        << "----------------------------------------\n";
+            std::string alertText = alertStream.str();
+            if (active_alerts[product_id] != alertText) {
+                active_alerts[product_id] = alertText;
+                file_needs_update = true;
+            }
+
+        }
+        else {
+            if (active_alerts.erase(product_id) > 0) {
+                file_needs_update = true;
+            }
+        }
+        if(file_needs_update) {
+            std::ofstream alertFile("./buy_alerts.txt");
+
+            if (alertFile.is_open()) {
+                for (const auto& pair : active_alerts) {
+                    alertFile << pair.second;
+                }
+                alertFile.close();
+            }
         }
     }
 
     void SkyblockItem::addHourToHistory(const hourNamespace::itemHour& item_hour) {
         if(history.size() >= MAX_HISTORY) {
             long double historyBuySum = averageBuyPrice * history.size();
-            long double historySellSum = averageBuyPrice * history.size();
+            long double historySellSum = averageSellPrice * history.size();
 
 
 
@@ -68,7 +98,7 @@ namespace SkyblockItems {
         }
         else {
             long double historyBuySum = averageBuyPrice * history.size();
-            long double historySellSum = averageBuyPrice * history.size();
+            long double historySellSum = averageSellPrice * history.size();
 
             history.push_front(item_hour);
             averageBuyPrice = ( historyBuySum + item_hour.getBuyAveragePrice() )  / history.size();

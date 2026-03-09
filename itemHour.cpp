@@ -26,7 +26,7 @@ namespace hourNamespace {
         if(start_timestamp == 0) {
             start_timestamp = token.getTimestamp();
         }
-        if (start_timestamp != 0 && token.getTimestamp() >= start_timestamp + 1000) {
+        if (start_timestamp != 0 && token.getTimestamp() >= start_timestamp + 3600000) {
             return HOUR_ENDED_ERROR;
         }
         sell.UpdateSell(token);
