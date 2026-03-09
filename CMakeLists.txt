@@ -18,6 +18,8 @@ add_executable(ProjectSkyblock
         DataBaseManager.h
         PriceObject.cpp
         PriceObject.h
+        MarketStatistics.cpp
+        MarketStatistics.h
 )
 
 # 2. Tell CMake where to find your downloaded nlohmann/json.hpp

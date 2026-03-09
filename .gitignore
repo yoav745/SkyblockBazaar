@@ -1,4 +1,16 @@
- cmake-build-*/
+# Build directories
+buildRelese/
+build/
+cmake-build-debug/
+cmake-build-release/
+
+# Compiled Object files
+*.o
+*.out
+
+# Databases
+*.db
+*.sqlite3
+
+# IDE folders (optional, but recommended)
 .idea/
-./buildRelese
-./cmake-build-debug

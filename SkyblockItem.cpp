@@ -9,6 +9,8 @@
 #include <unordered_map>
 #include <sstream> // We need this to format strings easily
 
+#include "MarketStatistics.h"
+
 namespace SkyblockItems {
 
     SkyblockItem::SkyblockItem(const std::string &id , DatabaseManager* db , double multipliernew)
@@ -38,6 +40,14 @@ namespace SkyblockItems {
         static std::unordered_map<std::string, std::string> active_alerts;
         bool file_needs_update = false;
 
+
+        double volatility = Statistics::MarketStatistics::calculateVolatility(history, averageSellPrice);
+        if (volatility > averageSellPrice * 0.8) {
+            return;
+        }
+        if (currentToken.getSellVolume() < 500 || currentToken.getBuyVolume() < 500) {
+            return;
+        }
         if(currentSellPrice < averageSellPrice * multiplier && currentSellPrice < averageSellPrice - 1000) {
 
             std::ostringstream alertStream;
