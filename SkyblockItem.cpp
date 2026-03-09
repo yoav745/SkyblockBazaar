@@ -8,7 +8,7 @@
 #include <fstream>
 #include <unordered_map>
 #include <sstream> // We need this to format strings easily
-
+#include <cstdlib> // Required for system() commands
 #include "MarketStatistics.h"
 
 namespace SkyblockItems {
@@ -30,57 +30,71 @@ namespace SkyblockItems {
     void SkyblockItem::processTick(const dataToken &live_tick) {
 
         checkBuyOpportunity(live_tick);
+
+
+        double volatility = Statistics::MarketStatistics::calculateVolatility(history, averageSellPrice);
+        if (history.size() > 10 && volatility > averageSellPrice * 0.8) {
+            return;
+        }
+
         addItemToHour(live_tick);
 
 
     }
     void SkyblockItem::checkBuyOpportunity(const dataToken& currentToken) const {
-        long double currentSellPrice = currentToken .getSellPrice();
+    long double currentSellPrice = currentToken.getSellPrice();
 
-        static std::unordered_map<std::string, std::string> active_alerts;
-        bool file_needs_update = false;
+    static std::unordered_map<std::string, std::string> active_alerts;
+    bool file_needs_update = false;
+    bool play_sound = false;
+
+    // 1. Check our Shields (Volatility and Liquidity)
 
 
-        double volatility = Statistics::MarketStatistics::calculateVolatility(history, averageSellPrice);
-        if (volatility > averageSellPrice * 0.8) {
-            return;
+
+    // 2. The Core Decision Logic
+    // Notice we use averageBuyPrice here so we cross the spread correctly!
+    if (currentSellPrice < averageSellPrice * multiplier && currentSellPrice > 1000) {
+
+        std::ostringstream alertStream;
+        alertStream << "Buy: " << product_id << "\n"
+                    << "The usual price to sell is: " << averageSellPrice << "\n"
+                    << "Yet now the price to buy is: " << currentSellPrice << "\n";
+
+        std::string alertText = alertStream.str();
+
+        if (active_alerts[product_id] != alertText) {
+            active_alerts[product_id] = alertText;
+            file_needs_update = true;
+            play_sound = true; // ONLY chime on a new/updated deal
         }
-        if (currentToken.getSellVolume() < 500 || currentToken.getBuyVolume() < 500) {
-            return;
-        }
-        if(currentSellPrice < averageSellPrice * multiplier && currentSellPrice < averageSellPrice - 1000) {
 
-            std::ostringstream alertStream;
-            alertStream << "Buy: " << product_id << "\n"
-                        << "The usual price to buy is: " << averageSellPrice << "\n"
-                        << "Yet now the price is: " << currentSellPrice << "\n"
-                        << "You can insta sell usually for: " << averageBuyPrice << "\n"
-                        << "Sell volume is: " << currentToken.getSellVolume() << "\n"
-                        << "Buy volume is: " << currentToken.getBuyVolume() << "\n"
-                        << "----------------------------------------\n";
-            std::string alertText = alertStream.str();
-            if (active_alerts[product_id] != alertText) {
-                active_alerts[product_id] = alertText;
-                file_needs_update = true;
+    } else {
+        // 3. The Cleanup Logic
+        // If it's NOT a safe market, or NO LONGER a good price, erase it!
+        if (active_alerts.erase(product_id) > 0) {
+            file_needs_update = true;
+            // Notice: play_sound stays false here. Silent deletion!
+        }
+    }
+
+    // 4. File I/O and Audio
+    if (file_needs_update) {
+        std::ofstream alertFile("./buy_alerts.txt");
+
+        if (alertFile.is_open()) {
+            for (const auto& pair : active_alerts) {
+                alertFile << pair.second;
             }
+            alertFile.close();
 
-        }
-        else {
-            if (active_alerts.erase(product_id) > 0) {
-                file_needs_update = true;
-            }
-        }
-        if(file_needs_update) {
-            std::ofstream alertFile("./buy_alerts.txt");
-
-            if (alertFile.is_open()) {
-                for (const auto& pair : active_alerts) {
-                    alertFile << pair.second;
-                }
-                alertFile.close();
+            if (play_sound) {
+                // Play the notification chime in the background
+                system("powershell.exe -c \"(New-Object Media.SoundPlayer 'C:\\Windows\\Media\\notify.wav').PlaySync()\" &");
             }
         }
     }
+}
 
     void SkyblockItem::addHourToHistory(const hourNamespace::itemHour& item_hour) {
         if(history.size() >= MAX_HISTORY) {

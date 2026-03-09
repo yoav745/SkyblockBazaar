@@ -32,7 +32,7 @@ namespace SkyblockItems {
         hourNamespace::itemHour active_hour;
 
         DatabaseManager* db_manager;
-        static constexpr size_t MAX_HISTORY = 168;
+        static constexpr size_t MAX_HISTORY = 1680;
         void checkBuyOpportunity(const dataToken& token) const;
         void addItemToHour(const dataToken& data);
         void addHourToHistory(const hourNamespace::itemHour& item_hour);

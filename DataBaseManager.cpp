@@ -64,7 +64,7 @@ std::vector<hourNamespace::itemHour> DatabaseManager::loadHistory(const std::str
     const char* sql = R"(
         SELECT timestamp, avg_buy_price, high_buy, low_buy, buy_volume ,avg_sell_price, high_sell, low_sell
          , sell_volume
-        FROM (SELECT * FROM bazaar_history WHERE product_id = ? ORDER BY timestamp DESC LIMIT 168)
+        FROM (SELECT * FROM bazaar_history WHERE product_id = ? ORDER BY timestamp DESC LIMIT 1680)
         ORDER BY timestamp ASC;
     )";
     sqlite3_stmt* stmt;
